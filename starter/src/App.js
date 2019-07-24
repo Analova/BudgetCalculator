@@ -17,7 +17,10 @@ function App() {
   const [charge, setCharge] = useState("");
   // single amount
   const [amount, setAmount] = useState("");
-  // functionality
+  //alert
+  const [alert, setAlert] = useState({ show: false });
+
+  //***************** FUNCTIONALITY
   const handleCharge = e => {
     setCharge(e.target.value);
   };
@@ -34,15 +37,43 @@ function App() {
         amount
       };
       setExpenses([...expenses, singleExpense]);
+      handleAlert({ type: "success", text: "Item Added" });
       setCharge("");
       setAmount("");
     } else {
       // handle Alert call
+      handleAlert({ type: "danger", text: "Please fill into all inputs!" });
     }
   };
+
+  // handleAlert
+  const handleAlert = ({ type, text }) => {
+    setAlert({ show: true, type, text });
+    setTimeout(() => {
+      setAlert({ show: false });
+    }, 3000);
+  };
+
+  // clear all items
+  const clearItems = () => {
+    setExpenses([]);
+    handleAlert({ type: "danger", text: "All items deleted!" });
+  };
+
+  // handle delete
+  const handleDelete = id => {
+    let tempExpenses = expenses.filter(item => item.id !== id);
+    setExpenses(tempExpenses);
+    handleAlert({ type: "danger", text: "Item deleted!" });
+  };
+
+  const handleEdit = id => {
+    console.log(`item edited: ${id}`);
+  };
+
   return (
     <>
-      <Alert />
+      {alert.show && <Alert type={alert.type} text={alert.text} />}
       <h1>Budget Calculator</h1>
       <main className="App">
         <ExpenseForm
@@ -52,7 +83,12 @@ function App() {
           handleAmount={handleAmount}
           handleSubmit={handleSubmit}
         />
-        <ExpenseList expenses={expenses} />
+        <ExpenseList
+          expenses={expenses}
+          handleDelete={handleDelete}
+          handleEdit={handleEdit}
+          clearItems={clearItems}
+        />
       </main>
       <h1>
         total spending:{" "}
